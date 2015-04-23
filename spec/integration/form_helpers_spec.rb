@@ -9,6 +9,12 @@ describe "Form Helpers" do
       @user = mock("User", :country => nil)
     end
 
+    it 'should output a select field with only provided country codes' do
+      output = country_code_select(:user, :country, nil, {country_codes: ['BE']})
+      output.scan(/option value=/).length.should eql 1
+      output.should match(/option value="BE"/)
+    end
+
     it "should output a select field with countries" do
       output = country_code_select(:user, :country)
       output.should match(/select id="user_country"/)

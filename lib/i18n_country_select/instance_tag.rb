@@ -26,7 +26,13 @@ module I18nCountrySelect
         countries += "<option value=\"\" disabled=\"disabled\">-------------</option>\n"
       end
 
-      countries = countries + options_for_select(country_translations, selected)
+      country_codes = COUNTRY_CODES
+
+      if options.present? and options[:country_codes]
+        country_codes = options[:country_codes]
+      end
+
+      countries = countries + options_for_select(country_translations(country_codes), selected)
 
       html_options = html_options.stringify_keys
       add_default_name_and_id(html_options)
@@ -34,16 +40,16 @@ module I18nCountrySelect
       content_tag(:select, countries.html_safe, html_options)
     end
 
-    def country_translations
-      Thread.current[:country_translations] ||= {}
-      Thread.current[:country_translations][I18n.locale] ||= begin
-        COUNTRY_CODES.map do |code|
+    def country_translations(country_codes)
+      #Thread.current[:country_translations] ||= {}
+      #Thread.current[:country_translations][I18n.locale] ||= begin
+        country_codes.map do |code|
           translation = I18n.t(code, :scope => :countries, :default => 'missing')
           translation == 'missing' ? nil : [translation, code]
         end.compact.sort_by do |translation, code|
           normalize_translation(translation)
         end
-      end
+      #end
     end
 
     private
